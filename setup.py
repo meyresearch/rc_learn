@@ -1,59 +1,85 @@
-"""
-RC_learn
-A tool to learn in an unsupervised fashion slow reaction coordinates in molecular dynamics
-"""
-import sys
-from setuptools import setup, find_packages
-import versioneer
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import print_function
 
-short_description = __doc__.split("\n")
+import io
+import re
+from glob import glob
+from os.path import basename
+from os.path import dirname
+from os.path import join
+from os.path import splitext
 
-# from https://github.com/pytest-dev/pytest-runner#conditional-requirement
-needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-pytest_runner = ['pytest-runner'] if needs_pytest else []
+from setuptools import find_packages
+from setuptools import setup
+from sphinx.setup_command import BuildDoc
 
-try:
-    with open("README.md", "r") as handle:
-        long_description = handle.read()
-except:
-    long_description = "\n".join(short_description[2:])
+def read(*names, **kwargs):
+    return io.open(
+        join(dirname(__file__), *names),
+        encoding=kwargs.get('encoding', 'utf8')
+    ).read()
 
+cmdclass = {'build_sphinx': BuildDoc}
+name = 'rc_learn'
+release = '0.1.0'
+
+#    cmdclass=cmdclass,
+#    command_options={
+#        'build_doc': {
+#            'project': ('setup.py', name),
+#            'release': ('setup.py', release),
+#            'source_dir': ('setup.py', 'doc')}},
 
 setup(
-    # Self-descriptive entries which should always be present
-    name='rc_learn',
-    author='Antonia Mey',
-    author_email='antonia.mey@ed.ac.uk',
-    description=short_description[0],
-    long_description=long_description,
-    long_description_content_type="text/markdown",
-    version=versioneer.get_version(),
-    cmdclass=versioneer.get_cmdclass(),
-    license='MIT',
-
-    # Which Python importable modules should be included when your package is installed
-    # Handled automatically by setuptools. Use 'exclude' to prevent some specific
-    # subpackage(s) from being added, if needed
-    packages=find_packages(),
-
-    # Optional include package data to ship with your package
-    # Customize MANIFEST.in if the general case does not suit your needs
-    # Comment out this line to prevent the files from being packaged with your software
+    name=name,
+    version=release,
+    license='GPL license',
+    description='Library for automatics selection of collective variables.',
+    long_description='%s\n%s' % (
+        re.compile('^.. start-badges.*^.. end-badges', re.M | re.S).sub('', read('README.rst')),
+        re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))
+    ),
+    author='Zofia Trstanova',
+    author_email='zofia.trstanova [at symbol] gmail.com',
+    url='https://github.com/ZofiaTr/mdfeature',
+    packages=find_packages('rc_learn'),
+    package_dir={'':'rc_learn'},
+    py_modules=[splitext(basename(path))[0] for path in glob('rc_learn/*.py')],
     include_package_data=True,
-
-    # Allows `setup.py test` to work correctly with pytest
-    setup_requires=[] + pytest_runner,
-
-    # Additional entries you may want simply uncomment the lines you want and fill in the data
-    # url='http://www.my_package.com',  # Website
-    # install_requires=[],              # Required packages, pulls from pip if needed; do not use for Conda deployment
-    # platforms=['Linux',
-    #            'Mac OS-X',
-    #            'Unix',
-    #            'Windows'],            # Valid platforms your code works on, adjust to your flavor
-    # python_requires=">=3.5",          # Python version restrictions
-
-    # Manual control if final package is compressible or not, set False to prevent the .egg from being made
-    # zip_safe=False,
-
+    zip_safe=False,
+    classifiers=[
+        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
+        'Development Status :: 3 - Alpha',
+        'Topic :: Scientific/Engineering'
+        'Intended Audience :: Science/Research',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: Unix',
+        'Operating System :: POSIX',
+        'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Topic :: Scientific/Engineering',
+    ],
+    keywords=[
+        # eg: 'keyword1', 'keyword2', 'keyword3',
+    ],
+    install_requires=[
+        'numpy', 'scipy', 'scikit-learn', 'matplotlib',
+    ],
+    extras_require={
+        # eg:
+        #   'rst': ['docutils>=0.11'],
+        #   ':python_version=="2.6"': ['argparse'],
+    },
 )
+#    entry_points={
+#        'console_scripts': [
+#            'pyDiffMap = pyDiffMap.cli:main',
+#        ]
+#    },
